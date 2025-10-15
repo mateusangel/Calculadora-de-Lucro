@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Calculator, TrendingUp, AlertCircle } from "lucide-react";
+import { TrendingUp, AlertCircle } from "lucide-react";
 import PlatformSelector from "@/components/calculator/PlatformSelector";
 import CalculatorForm from "@/components/calculator/CalculatorForm";
 import ResultsPanel from "@/components/calculator/ResultsPanel";
