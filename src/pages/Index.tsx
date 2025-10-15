@@ -24,7 +24,8 @@ const Index = () => {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center gap-3">
             <div className="h-12 w-12 rounded-xl bg-gradient-primary flex items-center justify-center shadow-soft">
-              <Calculator className="h-6 w-6 text-white" />
+              
+              <img src= "../../public/logo.png" className="border-4  rounded-xl" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-foreground">Calculadora de Lucro</h1>
