@@ -54,18 +54,18 @@ const Index = () => {
 
         {/* Calculator Interface */}
         {selectedPlatform && (
-          <div className="grid lg:grid-cols-2 gap-8">
-            <div className="space-y-6">
+          <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+            <div className="space-y-4 sm:space-y-6">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-foreground">Dados do Produto</h2>
+                <h2 className="text-lg sm:text-xl font-semibold text-foreground">Dados do Produto</h2>
                 <button
                   onClick={() => {
                     setSelectedPlatform(null);
                     setResults(null);
                   }}
-                  className="text-sm text-primary hover:text-primary/80 font-medium transition-colors"
+                  className="text-xs sm:text-sm text-primary hover:text-primary/80 font-medium transition-colors"
                 >
-                  Trocar plataforma
+                  Trocar
                 </button>
               </div>
               
@@ -75,20 +75,20 @@ const Index = () => {
               />
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {results ? (
                 <>
                   <ResultsPanel results={results} />
                   <PriceSuggestions results={results} />
                 </>
               ) : (
-                <div className="rounded-xl bg-card border p-8 flex flex-col items-center justify-center text-center h-full min-h-[400px]">
-                  <AlertCircle className="h-12 w-12 text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-semibold text-foreground mb-2">
-                    Preencha os dados para calcular
+                <div className="rounded-xl bg-card border p-6 sm:p-8 flex flex-col items-center justify-center text-center h-full min-h-[300px] sm:min-h-[400px]">
+                  <AlertCircle className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground mb-3 sm:mb-4" />
+                  <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2">
+                    Preencha os dados
                   </h3>
-                  <p className="text-sm text-muted-foreground max-w-sm">
-                    Complete o formulário ao lado com as informações do seu produto para ver o resultado do cálculo de lucro.
+                  <p className="text-xs sm:text-sm text-muted-foreground max-w-sm">
+                    Complete o formulário com as informações do produto
                   </p>
                 </div>
               )}

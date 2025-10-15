@@ -4,6 +4,8 @@ import type { Platform } from "@/pages/Index";
 export interface CalculationResult {
   netProfit: number;
   profitMargin: number;
+  totalUnits: number;
+  projectedProfit: number;
   breakdown: {
     revenue: number;
     productCost: number;
@@ -29,7 +31,7 @@ export const calculateProfit = (data: FormData, platform: Platform): Calculation
   // Cost calculations
   const productCost = data.productCost;
   const platformFee = (data.salePrice * data.platformFee) / 100;
-  const shippingCost = data.freeShipping ? data.shippingCost : 0; // Only cost if free shipping
+  const shippingCost = data.shippingCost;
   const packagingCost = data.packagingCost;
   const adsCost = data.adsCost;
   
@@ -39,11 +41,15 @@ export const calculateProfit = (data: FormData, platform: Platform): Calculation
   // Total costs
   const totalCosts = productCost + platformFee + shippingCost + packagingCost + adsCost + taxAmount;
 
-  // Net profit
+  // Net profit per unit
   const netProfit = revenue - totalCosts;
 
   // Profit margin
   const profitMargin = revenue > 0 ? (netProfit / revenue) * 100 : 0;
+
+  // Projection calculations
+  const totalUnits = (data.unitsPerDay || 1) * (data.days || 1);
+  const projectedProfit = netProfit * totalUnits;
 
   // Price suggestions
   const fixedCosts = productCost + shippingCost + packagingCost + adsCost;
@@ -60,6 +66,8 @@ export const calculateProfit = (data: FormData, platform: Platform): Calculation
   return {
     netProfit,
     profitMargin,
+    totalUnits,
+    projectedProfit,
     breakdown: {
       revenue,
       productCost,

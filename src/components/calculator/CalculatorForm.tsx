@@ -22,6 +22,8 @@ export interface FormData {
   discount: number;
   adsCost: number;
   taxRate: number;
+  unitsPerDay: number;
+  days: number;
 }
 
 const platformDefaults = {
@@ -41,6 +43,8 @@ const CalculatorForm = ({ platform, onCalculate }: CalculatorFormProps) => {
     discount: 0,
     adsCost: 0,
     taxRate: 0,
+    unitsPerDay: 1,
+    days: 1,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -69,6 +73,32 @@ const CalculatorForm = ({ platform, onCalculate }: CalculatorFormProps) => {
           <div>
             <h3 className="font-semibold text-foreground">{platformDefaults[platform].name}</h3>
             <p className="text-xs text-muted-foreground">Preencha os campos abaixo</p>
+          </div>
+        </div>
+
+        {/* Previsibilidade */}
+        <div className="grid grid-cols-2 gap-4 p-4 rounded-lg bg-muted/30 border">
+          <div className="space-y-2">
+            <Label htmlFor="unitsPerDay">Unidades/Dia</Label>
+            <Input
+              id="unitsPerDay"
+              type="number"
+              min="1"
+              placeholder="Ex: 4"
+              value={formData.unitsPerDay || ""}
+              onChange={(e) => updateField("unitsPerDay", parseInt(e.target.value) || 1)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="days">Dias</Label>
+            <Input
+              id="days"
+              type="number"
+              min="1"
+              placeholder="Ex: 30"
+              value={formData.days || ""}
+              onChange={(e) => updateField("days", parseInt(e.target.value) || 1)}
+            />
           </div>
         </div>
 
@@ -102,103 +132,94 @@ const CalculatorForm = ({ platform, onCalculate }: CalculatorFormProps) => {
           />
         </div>
 
-        {/* Custo de Envio */}
-        <div className="space-y-2">
-          <Label htmlFor="shippingCost">Custo de Envio (R$)</Label>
-          <Input
-            id="shippingCost"
-            type="number"
-            step="0.01"
-            min="0"
-            placeholder="Ex: 12.00"
-            value={formData.shippingCost || ""}
-            onChange={(e) => updateField("shippingCost", parseFloat(e.target.value) || 0)}
-            disabled={formData.freeShipping}
-          />
-        </div>
-
-        {/* Frete Grátis */}
-        <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
-          <div className="space-y-0.5">
-            <Label htmlFor="freeShipping" className="text-base">Frete Grátis</Label>
-            <p className="text-xs text-muted-foreground">Você paga o frete pelo cliente?</p>
+        {/* Custos Básicos */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="shippingCost">Envio (R$)</Label>
+            <Input
+              id="shippingCost"
+              type="number"
+              step="0.01"
+              min="0"
+              placeholder="12.00"
+              value={formData.shippingCost || ""}
+              onChange={(e) => updateField("shippingCost", parseFloat(e.target.value) || 0)}
+            />
           </div>
-          <Switch
-            id="freeShipping"
-            checked={formData.freeShipping}
-            onCheckedChange={(checked) => updateField("freeShipping", checked)}
-          />
+          <div className="space-y-2">
+            <Label htmlFor="packagingCost">Embalagem (R$)</Label>
+            <Input
+              id="packagingCost"
+              type="number"
+              step="0.01"
+              min="0"
+              placeholder="5.00"
+              value={formData.packagingCost || ""}
+              onChange={(e) => updateField("packagingCost", parseFloat(e.target.value) || 0)}
+            />
+          </div>
         </div>
 
-        {/* Taxa da Plataforma */}
-        <div className="space-y-2">
-          <Label htmlFor="platformFee">Taxa da Plataforma (%)</Label>
-          <Input
-            id="platformFee"
-            type="number"
-            step="0.1"
-            min="0"
-            max="100"
-            value={formData.platformFee}
-            onChange={(e) => updateField("platformFee", parseFloat(e.target.value) || 0)}
-          />
+        {/* Taxas e Custos Extras */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="platformFee">Taxa ({platformDefaults[platform].name})</Label>
+            <div className="relative">
+              <Input
+                id="platformFee"
+                type="number"
+                step="0.1"
+                min="0"
+                max="100"
+                value={formData.platformFee}
+                onChange={(e) => updateField("platformFee", parseFloat(e.target.value) || 0)}
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">%</span>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="taxRate">Imposto</Label>
+            <div className="relative">
+              <Input
+                id="taxRate"
+                type="number"
+                step="0.1"
+                min="0"
+                max="100"
+                placeholder="8"
+                value={formData.taxRate || ""}
+                onChange={(e) => updateField("taxRate", parseFloat(e.target.value) || 0)}
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">%</span>
+            </div>
+          </div>
         </div>
 
-        {/* Custo de Embalagem */}
-        <div className="space-y-2">
-          <Label htmlFor="packagingCost">Embalagem/Logística (R$)</Label>
-          <Input
-            id="packagingCost"
-            type="number"
-            step="0.01"
-            min="0"
-            placeholder="Ex: 5.00"
-            value={formData.packagingCost || ""}
-            onChange={(e) => updateField("packagingCost", parseFloat(e.target.value) || 0)}
-          />
-        </div>
-
-        {/* Desconto */}
-        <div className="space-y-2">
-          <Label htmlFor="discount">Desconto/Cupom (R$)</Label>
-          <Input
-            id="discount"
-            type="number"
-            step="0.01"
-            min="0"
-            placeholder="Ex: 10.00"
-            value={formData.discount || ""}
-            onChange={(e) => updateField("discount", parseFloat(e.target.value) || 0)}
-          />
-        </div>
-
-        {/* Investimento em Ads */}
-        <div className="space-y-2">
-          <Label htmlFor="adsCost">Investimento em Ads (R$)</Label>
-          <Input
-            id="adsCost"
-            type="number"
-            step="0.01"
-            min="0"
-            placeholder="Ex: 5.00"
-            value={formData.adsCost || ""}
-            onChange={(e) => updateField("adsCost", parseFloat(e.target.value) || 0)}
-          />
-        </div>
-
-        {/* Taxa de Imposto */}
-        <div className="space-y-2">
-          <Label htmlFor="taxRate">Imposto Adicional (%)</Label>
-          <Input
-            id="taxRate"
-            type="number"
-            step="0.1"
-            min="0"
-            max="100"
-            placeholder="Ex: 8 (Simples Nacional)"
-            value={formData.taxRate || ""}
-            onChange={(e) => updateField("taxRate", parseFloat(e.target.value) || 0)}
-          />
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="discount">Desconto (R$)</Label>
+            <Input
+              id="discount"
+              type="number"
+              step="0.01"
+              min="0"
+              placeholder="10.00"
+              value={formData.discount || ""}
+              onChange={(e) => updateField("discount", parseFloat(e.target.value) || 0)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="adsCost">Ads (R$)</Label>
+            <Input
+              id="adsCost"
+              type="number"
+              step="0.01"
+              min="0"
+              placeholder="5.00"
+              value={formData.adsCost || ""}
+              onChange={(e) => updateField("adsCost", parseFloat(e.target.value) || 0)}
+            />
+          </div>
         </div>
 
         <Button type="submit" className="w-full" size="lg">

@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { TrendingUp, TrendingDown, DollarSign, Percent, AlertTriangle } from "lucide-react";
+import { TrendingUp, TrendingDown, DollarSign, Percent, AlertTriangle, Calendar } from "lucide-react";
 import type { CalculationResult } from "@/lib/calculator";
 
 interface ResultsPanelProps {
@@ -8,37 +8,48 @@ interface ResultsPanelProps {
 
 const ResultsPanel = ({ results }: ResultsPanelProps) => {
   const isProfit = results.netProfit > 0;
-  const profitColor = isProfit ? "success" : "destructive";
 
   return (
     <div className="space-y-4">
       {/* Main Result Card */}
-      <Card className={`p-6 border-2 ${isProfit ? 'border-success/20 bg-success/5' : 'border-destructive/20 bg-destructive/5'}`}>
-        <div className="flex items-start justify-between mb-4">
+      <Card className={`p-4 sm:p-6 border-2 ${isProfit ? 'border-success bg-success/5' : 'border-destructive bg-destructive/5'}`}>
+        <div className="space-y-4">
+          {/* Lucro por Unidade */}
           <div>
-            <p className="text-sm font-medium text-muted-foreground mb-1">Resultado Final</p>
-            <div className="flex items-baseline gap-2">
-              <h2 className={`text-4xl font-bold text-${profitColor}`}>
+            <p className="text-xs sm:text-sm font-medium text-muted-foreground mb-2">Lucro por Unidade</p>
+            <div className="flex items-center gap-2">
+              <h2 className={`text-3xl sm:text-4xl font-bold ${isProfit ? 'text-success' : 'text-destructive'}`}>
                 R$ {results.netProfit.toFixed(2)}
               </h2>
               {isProfit ? (
-                <TrendingUp className="h-6 w-6 text-success" />
+                <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-success" />
               ) : (
-                <TrendingDown className="h-6 w-6 text-destructive" />
+                <TrendingDown className="h-5 w-5 sm:h-6 sm:w-6 text-destructive" />
               )}
             </div>
           </div>
-          <div className={`h-16 w-16 rounded-2xl bg-${profitColor}/10 flex items-center justify-center`}>
-            <DollarSign className={`h-8 w-8 text-${profitColor}`} />
-          </div>
-        </div>
 
-        <div className="flex items-center gap-2 p-3 rounded-lg bg-background/50">
-          <Percent className={`h-5 w-5 text-${profitColor}`} />
-          <span className="text-sm text-muted-foreground">Margem de Lucro:</span>
-          <span className={`text-lg font-bold text-${profitColor}`}>
-            {results.profitMargin.toFixed(2)}%
-          </span>
+          {/* Projeção Total */}
+          <div className="p-3 sm:p-4 rounded-lg bg-background border-2 border-primary">
+            <div className="flex items-center gap-2 mb-2">
+              <Calendar className="h-4 w-4 text-primary" />
+              <span className="text-xs sm:text-sm font-medium text-muted-foreground">
+                Projeção ({results.totalUnits} unidades)
+              </span>
+            </div>
+            <div className="text-2xl sm:text-3xl font-bold text-primary">
+              R$ {results.projectedProfit.toFixed(2)}
+            </div>
+          </div>
+
+          {/* Margem */}
+          <div className="flex items-center gap-2 p-3 rounded-lg bg-background/50">
+            <Percent className={`h-4 w-4 sm:h-5 sm:w-5 ${isProfit ? 'text-success' : 'text-destructive'}`} />
+            <span className="text-xs sm:text-sm text-muted-foreground">Margem:</span>
+            <span className={`text-base sm:text-lg font-bold ${isProfit ? 'text-success' : 'text-destructive'}`}>
+              {results.profitMargin.toFixed(1)}%
+            </span>
+          </div>
         </div>
 
         {!isProfit && (
@@ -67,47 +78,45 @@ const ResultsPanel = ({ results }: ResultsPanelProps) => {
       </Card>
 
       {/* Cost Breakdown */}
-      <Card className="p-6">
-        <h3 className="font-semibold text-foreground mb-4">Detalhamento de Custos</h3>
-        <div className="space-y-3">
-          <div className="flex justify-between items-center pb-3 border-b">
-            <span className="text-sm text-muted-foreground">Receita Bruta</span>
+      <Card className="p-4 sm:p-6">
+        <h3 className="font-semibold text-foreground mb-3 sm:mb-4 text-sm sm:text-base">Detalhamento</h3>
+        <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm">
+          <div className="flex justify-between items-center pb-2 sm:pb-3 border-b">
+            <span className="text-muted-foreground">Receita</span>
             <span className="font-semibold text-foreground">R$ {results.breakdown.revenue.toFixed(2)}</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">Custo do Produto</span>
-            <span className="font-medium text-destructive">- R$ {results.breakdown.productCost.toFixed(2)}</span>
+            <span className="text-muted-foreground">Produto</span>
+            <span className="font-medium text-destructive">-{results.breakdown.productCost.toFixed(2)}</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">Taxa da Plataforma</span>
-            <span className="font-medium text-destructive">- R$ {results.breakdown.platformFee.toFixed(2)}</span>
+            <span className="text-muted-foreground">Taxa</span>
+            <span className="font-medium text-destructive">-{results.breakdown.platformFee.toFixed(2)}</span>
           </div>
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">Custos de Envio</span>
-            <span className="font-medium text-destructive">- R$ {results.breakdown.shippingCost.toFixed(2)}</span>
-          </div>
+          {results.breakdown.shippingCost > 0 && (
+            <div className="flex justify-between items-center">
+              <span className="text-muted-foreground">Envio</span>
+              <span className="font-medium text-destructive">-{results.breakdown.shippingCost.toFixed(2)}</span>
+            </div>
+          )}
           {results.breakdown.packagingCost > 0 && (
             <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">Embalagem/Logística</span>
-              <span className="font-medium text-destructive">- R$ {results.breakdown.packagingCost.toFixed(2)}</span>
+              <span className="text-muted-foreground">Embalagem</span>
+              <span className="font-medium text-destructive">-{results.breakdown.packagingCost.toFixed(2)}</span>
             </div>
           )}
           {results.breakdown.adsCost > 0 && (
             <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">Investimento em Ads</span>
-              <span className="font-medium text-destructive">- R$ {results.breakdown.adsCost.toFixed(2)}</span>
+              <span className="text-muted-foreground">Ads</span>
+              <span className="font-medium text-destructive">-{results.breakdown.adsCost.toFixed(2)}</span>
             </div>
           )}
           {results.breakdown.taxAmount > 0 && (
             <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">Impostos</span>
-              <span className="font-medium text-destructive">- R$ {results.breakdown.taxAmount.toFixed(2)}</span>
+              <span className="text-muted-foreground">Impostos</span>
+              <span className="font-medium text-destructive">-{results.breakdown.taxAmount.toFixed(2)}</span>
             </div>
           )}
-          <div className="flex justify-between items-center pt-3 border-t">
-            <span className="text-sm font-semibold text-foreground">Custo Total</span>
-            <span className="font-bold text-destructive">R$ {results.breakdown.totalCosts.toFixed(2)}</span>
-          </div>
         </div>
       </Card>
     </div>
